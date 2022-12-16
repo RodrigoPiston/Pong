@@ -3,7 +3,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <SFML/Graphics.hpp>
-
+#include "Ball.h"
 
 int main() {
 	// Create a video mode object
@@ -19,7 +19,7 @@ int main() {
 	Bat bat(1920 / 2, 1080 - 20);
 
 	// Add a ball
-
+	Ball ball(1920 / 2, 0);
 	// Create a Text object called HUD
 	Text hud;
 
@@ -85,13 +85,51 @@ int main() {
 		Time dt = clock.restart();
 
 		bat.update(dt);
+		ball.update(dt);
 
 		// Update the HUD text
 		std::stringstream ss;
 		ss << "Score: " << score << "\tLives: " << lives;
 		hud.setString(ss.str());
 
+		// Handle ball hitting the bottom
+		if (ball.getPosition().top > window.getSize().y) {
+			// reverse the ball direction
+			ball.reboundBottom();
 
+			// Check for zero lives 
+			if (lives < 1) {
+				// reset the score
+				score = 0;
+				// reset the lives
+				lives = 3;
+			}
+			// Remove a life
+			lives--;
+		}
+
+		// Handle ball hitting top
+		if (ball.getPosition().top < 0) {
+			ball.reboundBatOrTop();
+
+			// Add a point to the players score
+			score++;
+		}
+
+		// Handle ball hitting the bottom
+		if (ball.getPosition().left < 0 ||
+			ball.getPosition().left + ball.getPosition().width > window.getSize().x) {
+			// reverse the ball direction
+			ball.reboundSides();
+		}
+
+		// Has the ball hit the bat?
+		if (ball.getPosition().intersects(bat.getPosition())){
+			// Hit detected so reverse the ball and score a point
+			ball.reboundBatOrTop();
+		}
+
+		
 		/*
 			***********************
 			Draw into the window object
@@ -101,6 +139,7 @@ int main() {
 		window.clear();
 		window.draw(hud);
 		window.draw(bat.getShape());
+		window.draw(ball.getShape());
 		window.display();
 	}
 

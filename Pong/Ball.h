@@ -7,9 +7,10 @@ class Ball
 {
 private:
 	Vector2f m_Position;
-	RectangleShape m_Shape;
+	CircleShape m_Shape;
 
-	float m_Speed = 2000.0f;
+	float m_Speed = 1000.0f;
+	float m_OriginalSpeed = 1000.0f;
 	float m_DirectionX = .2f;
 	float m_DirectionY = .2f;
 
@@ -18,7 +19,7 @@ public:
 
 	FloatRect getPosition();
 
-	RectangleShape getShape();
+	CircleShape getShape();
 
 	float getXVelocity();
 
@@ -27,6 +28,8 @@ public:
 	void reboundBatOrTop();
 	
 	void reboundBottom();
+	
+	void resetSpeed();
 
 	void update(Time dt);
 };

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <SFML/Graphics.hpp>
 #include "Ball.h"
+#include <iostream>
 
 int main() {
 	// Create a video mode object
@@ -60,15 +61,16 @@ int main() {
 			window.close();
 		}
 
-		// Handle the pressing and releasing of the arrow keys
-		if (Keyboard::isKeyPressed(Keyboard::Left)) {
+		// Handle the pressing and releasing of the arrow keys and Handle bat hitting sides
+		if (Keyboard::isKeyPressed(Keyboard::Left) && bat.getPosition().left >= 0) {
 			bat.moveLeft();
 		}
 		else {
 			bat.stopLeft();
 		}
 
-		if (Keyboard::isKeyPressed(Keyboard::Right)) {
+		if (Keyboard::isKeyPressed(Keyboard::Right) &&
+			(bat.getPosition().left + bat.getPosition().width) <= window.getSize().x) {
 			bat.moveRight();
 		}
 		else {
@@ -93,7 +95,7 @@ int main() {
 		hud.setString(ss.str());
 
 		// Handle ball hitting the bottom
-		if (ball.getPosition().top > window.getSize().y) {
+		if (ball.getPosition().top >= window.getSize().y) {
 			// reverse the ball direction
 			ball.reboundBottom();
 
@@ -103,13 +105,16 @@ int main() {
 				score = 0;
 				// reset the lives
 				lives = 3;
+
+				// reset ball speed
+				ball.resetSpeed();
 			}
 			// Remove a life
 			lives--;
 		}
 
 		// Handle ball hitting top
-		if (ball.getPosition().top < 0) {
+		if (ball.getPosition().top <= 0) {
 			ball.reboundBatOrTop();
 
 			// Add a point to the players score
@@ -117,8 +122,8 @@ int main() {
 		}
 
 		// Handle ball hitting the bottom
-		if (ball.getPosition().left < 0 ||
-			ball.getPosition().left + ball.getPosition().width > window.getSize().x) {
+		if (ball.getPosition().left <= 0 ||
+			(ball.getPosition().left + ball.getPosition().width) >= window.getSize().x) {
 			// reverse the ball direction
 			ball.reboundSides();
 		}
@@ -129,7 +134,6 @@ int main() {
 			ball.reboundBatOrTop();
 		}
 
-		
 		/*
 			***********************
 			Draw into the window object

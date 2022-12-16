@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <SFML/Graphics.hpp>
 #include "Ball.h"
-#include <iostream>
+#include <SFML/Audio.hpp>
 
 int main() {
 	// Create a video mode object
@@ -26,8 +26,8 @@ int main() {
 
 	// A cool retro-style font
 	Font font;
-	font.loadFromFile("fonts/game_over.ttf");
-	
+	font.loadFromFile("assets/fonts/game_over.ttf");
+
 	// Set the font to our retro-style
 	hud.setFont(font);
 
@@ -39,6 +39,29 @@ int main() {
 
 	hud.setPosition(20, 20);
 
+	// The background sound
+	SoundBuffer backgroundBuffer;
+	backgroundBuffer.loadFromFile("assets/sounds/background.wav");
+	Sound backgroundSound;
+	backgroundSound.setBuffer(backgroundBuffer);
+	backgroundSound.setLoop(true);
+	backgroundSound.setVolume(10);
+	backgroundSound.play();
+
+	// A sound effect for the ball
+	SoundBuffer ballHit1;
+	SoundBuffer ballHit2;
+	ballHit1.loadFromFile("assets/sounds/ball_hit_1.wav");
+	ballHit2.loadFromFile("assets/sounds/ball_hit_1.wav");
+	
+	Sound ballHit1Sound;
+	Sound ballHit2Sound;
+	
+	ballHit1Sound.setBuffer(ballHit1);
+	ballHit2Sound.setBuffer(ballHit2);
+	
+	ballHit1Sound.setVolume(10);
+	ballHit2Sound.setVolume(10);
 	// Here is our clock for timing everything
 	Clock clock;
 
@@ -116,6 +139,7 @@ int main() {
 		// Handle ball hitting top
 		if (ball.getPosition().top <= 0) {
 			ball.reboundBatOrTop();
+			ballHit1Sound.play();
 
 			// Add a point to the players score
 			score++;
@@ -125,6 +149,8 @@ int main() {
 		if (ball.getPosition().left <= 0 ||
 			(ball.getPosition().left + ball.getPosition().width) >= window.getSize().x) {
 			// reverse the ball direction
+			ballHit1Sound.play();
+
 			ball.reboundSides();
 		}
 
@@ -132,6 +158,7 @@ int main() {
 		if (ball.getPosition().intersects(bat.getPosition())){
 			// Hit detected so reverse the ball and score a point
 			ball.reboundBatOrTop();
+			ballHit2Sound.play();
 		}
 
 		/*
